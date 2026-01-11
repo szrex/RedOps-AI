@@ -1,8 +1,9 @@
-import requests
+import httpx
 
-def get_http_headers(domain: str):
+async def get_http_headers(domain: str):
     try:
-        response = requests.get(f"http://{domain}", timeout=5)
-        return dict(response.headers)
+        async with httpx.AsyncClient(timeout=5) as client:
+            response = await client.get(f"http://{domain}")
+            return dict(response.headers)
     except Exception:
         return {}

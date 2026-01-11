@@ -1,27 +1,40 @@
+import asyncio
 from backend.recon.target import Target
+from backend.recon.schema import base_recon_schema
 from backend.recon.dns_enum import resolve_domain
 from backend.recon.whois_lookup import get_whois
 from backend.recon.http_fingerprint import get_http_headers
+from backend.utils.logger import logger
+
 
 class ReconEngine:
     def __init__(self, target_value: str):
         self.target = Target(target_value)
 
-    def run(self):
+    async def run(self):
+        # ✅ self is valid here
+        logger.info(f"Starting recon for {self.target.value}")
+
         if self.target.type == "unknown":
             raise ValueError("Invalid target provided")
 
-        result = {
-            "target": self.target.value,
-            "type": self.target.type,
-            "dns": {},
-            "whois": {},
-            "http_headers": {}
-        }
+        result = base_recon_schema(
+            self.target.value,
+            self.target.type
+        )
 
         if self.target.type == "domain":
-            result["dns"] = resolve_domain(self.target.value)
-            result["whois"] = get_whois(self.target.value)
-            result["http_headers"] = get_http_headers(self.target.value)
+            dns_task = asyncio.to_thread(resolve_domain, self.target.value)
+            whois_task = asyncio.to_thread(get_whois, self.target.value)
+            http_task = get_http_headers(self.target.value)
 
+            dns, whois, headers = await asyncio.gather(
+                dns_task, whois_task, http_task
+            )
+
+            result["data"]["dns"] = dns
+            result["data"]["whois"] = whois
+            result["data"]["http_headers"] = headers
+
+        logger.info(f"Recon completed for {self.target.value}")
         return result

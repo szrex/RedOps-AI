@@ -13,9 +13,10 @@ def root():
     return {"status": "RedOps AI backend running"}
 
 @app.post("/recon")
-def run_recon(target: str):
+async def run_recon(target: str):
     try:
         engine = ReconEngine(target)
-        return engine.run()
+        return await engine.run()
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+

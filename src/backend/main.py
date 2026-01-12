@@ -3,6 +3,7 @@ from backend.recon.recon_engine import ReconEngine
 from backend.vulnerability_assessment.va_engine import VulnerabilityAssessmentEngine
 from backend.ai_engine.risk_reasoner import prioritize_findings
 from backend.ai_engine.report_generator import generate_ai_report
+from backend.ai_engine.agent_controller import agent_plan
 
 
 
@@ -60,3 +61,8 @@ async def generate_report(target: str):
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+@app.post("/agent/plan")
+async def ai_agent_plan(target: str):
+    context = {}
+
+    return agent_plan(context)

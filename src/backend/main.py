@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from backend.recon.recon_engine import ReconEngine
 from backend.vulnerability_assessment.va_engine import VulnerabilityAssessmentEngine
 from backend.ai_engine.risk_reasoner import prioritize_findings
+from backend.ai_engine.report_generator import generate_ai_report
 
 
 
@@ -34,6 +35,28 @@ async def run_va(target: str):
 
         va_result["findings"] = prioritize_findings(va_result["findings"])
         return va_result
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+@app.post("/report")
+async def generate_report(target: str):
+    try:
+        recon_engine = ReconEngine(target)
+        recon_result = await recon_engine.run()
+
+        va_engine = VulnerabilityAssessmentEngine(recon_result)
+        va_result = va_engine.run()
+
+        ai_report = generate_ai_report(
+            target,
+            va_result["findings"]
+        )
+
+        return {
+            "meta": va_result["meta"],
+            "findings": va_result["findings"],
+            "ai_report": ai_report["ai_report"]
+        }
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

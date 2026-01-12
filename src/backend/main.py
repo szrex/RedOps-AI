@@ -4,6 +4,9 @@ from backend.vulnerability_assessment.va_engine import VulnerabilityAssessmentEn
 from backend.ai_engine.risk_reasoner import prioritize_findings
 from backend.ai_engine.report_generator import generate_ai_report
 from backend.ai_engine.agent_controller import agent_plan
+from backend.ai_engine.execution_engine import execute_tool
+from backend.ai_engine.execution_policy import can_execute
+from backend.ai_engine.hardening_advisor import generate_hardening_advice
 
 
 
@@ -39,6 +42,7 @@ async def run_va(target: str):
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
 @app.post("/report")
 async def generate_report(target: str):
     try:
@@ -61,8 +65,48 @@ async def generate_report(target: str):
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
 @app.post("/agent/plan")
 async def ai_agent_plan(target: str):
     context = {}
 
     return agent_plan(context)
+
+@app.post("/agent/execute")
+async def ai_agent_execute(
+    target: str,
+    tool: str,
+    requires_human_approval: bool
+):
+    context = {}
+
+    if not can_execute(tool, requires_human_approval):
+        return {
+            "status": "blocked",
+            "message": "Human approval required before execution"
+        }
+
+    context = await execute_tool(tool, target, context)
+
+    return {
+        "status": "executed",
+        "context": context
+    }
+
+@app.post("/hardening")
+async def ai_hardening_advice(target: str):
+    recon = ReconEngine(target)
+    recon_data = await recon.run()
+
+    va = VulnerabilityAssessmentEngine(recon_data)
+    va_data = va.run()
+
+    advice = generate_hardening_advice(
+        target,
+        va_data["findings"]
+    )
+
+    return {
+        "target": target,
+        "hardening_advice": advice
+    }

@@ -7,6 +7,7 @@ from backend.ai_engine.agent_controller import agent_plan
 from backend.ai_engine.execution_engine import execute_tool
 from backend.ai_engine.execution_policy import can_execute
 from backend.ai_engine.hardening_advisor import generate_hardening_advice
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -15,6 +16,15 @@ app = FastAPI(
     description="AI-assisted penetration testing orchestration platform",
     version="0.1.0"
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def root():

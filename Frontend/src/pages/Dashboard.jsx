@@ -103,7 +103,7 @@ export default function Dashboard() {
               <span style={{ fontSize: "10px", fontWeight: "bold", color: "#22c55e" }}>Engine Online</span>
             </div>
           </div>
-          <a href="#" onClick={handleLinkClick} style={{ textDecoration: "none" }}>
+          <a href="/auto" onClick={handleLinkClick} style={{ textDecoration: "none" }}>
             <button style={{ padding: "8px 20px", background: theme.accent, color: "white", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer" }}>
               + New Scan
             </button>

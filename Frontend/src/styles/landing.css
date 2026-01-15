@@ -2,14 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global theme */
 body {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: #0a0a0c;
   color: #e2e8f0;
 }
 
-/* Shared styles */
 .glass {
   background: rgba(23,23,26,0.6);
   backdrop-filter: blur(15px);
@@ -21,7 +19,7 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(to right, #ffffff, #94a3b8);
+  background: linear-gradient(to right, #fff, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -35,12 +33,6 @@ body {
   z-index: -1;
 }
 
-.accent-gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-}
-
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.mono {
+  font-family: 'JetBrains Mono', monospace;
 }

@@ -4,3 +4,5 @@ dnspython
 python-whois
 requests
 httpx
+ffuf
+dirsearch

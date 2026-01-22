@@ -2,53 +2,56 @@ from backend.ai_engine.llm_client import call_llm
 import json
 
 
-def generate_hardening_advice(target: str, findings: list):
-    """
-    Returns structured hardening advice suitable for UI + PDF rendering.
-    """
-
+def generate_hardening_advice(
+    target: str,
+    recon: dict,
+    findings: list,
+    directories: list
+) -> list[dict]:
     prompt = f"""
-You are a senior penetration tester and defensive security architect.
+You are a senior penetration tester writing a remediation report.
 
-Target: {target}
+Target:
+{target}
 
-Identified vulnerabilities and exposures:
+Reconnaissance summary:
+{json.dumps(recon, indent=2)}
+
+Discovered directories:
+{directories}
+
+Identified vulnerabilities:
 {findings}
 
-Your task:
-- Produce SECURITY HARDENING ADVICE
-- Each item MUST contain:
-  1. A short, professional heading
-  2. A clear explanation (4–5 sentences, paragraph form)
-- Focus on REALISTIC defensive actions (config, access control, monitoring, architecture)
-- DO NOT suggest exploit execution
-- DO NOT include commands
-- DO NOT include markdown
+TASK:
+Generate realistic, target-specific hardening advice.
 
-OUTPUT FORMAT (STRICT JSON ONLY):
-
-[
-  {{
-    "title": "Short hardening heading",
-    "description": "4–5 sentence paragraph explaining the risk and how to mitigate it."
-  }}
-]
-
-Rules:
-- Return ONLY valid JSON
-- No extra text
-- No markdown
+RULES:
+- Return STRICT JSON ARRAY
+- Each item must contain:
+  - title
+  - description (4–5 lines, professional, technical, actionable)
+- Advice MUST reference recon data or discovered directories
+- Example topics:
+  - Exposed admin panels
+  - Technology fingerprint hardening
+  - Access control
+  - Logging & monitoring
+- NO generic security tips
+- NO markdown
 """
 
-    response = call_llm(prompt)
+    raw = call_llm(prompt)
 
     try:
-        return json.loads(response)
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return parsed
     except Exception:
-        # Failsafe to prevent UI crashes
-        return [
-            {
-                "title": "Hardening Guidance Unavailable",
-                "description": "The system was unable to generate structured hardening advice. Review findings manually and apply standard security best practices."
-            }
-        ]
+        pass
+
+    # fallback (never crash pipeline)
+    return [{
+        "title": "Security Review Required",
+        "description": raw
+    }]

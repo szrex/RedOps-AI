@@ -77,43 +77,36 @@ export default function AutoResults() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
 
-            {/* Recon */}
-<SectionCard title="Reconnaissance" icon={<Globe size={18} color="#3b82f6" />}>
+            {/* RECON */}
+            <SectionCard title="Reconnaissance" icon={<Globe size={18} color="#3b82f6" />}>
+              <ReconBlock title="Scan Metadata">
+                <ReconItem label="Target" value={results.recon?.meta?.target} />
+                <ReconItem label="Type" value={results.recon?.meta?.type} />
+                <ReconItem label="Timestamp" value={results.recon?.meta?.timestamp} />
+                <ReconItem label="Tool" value={results.recon?.meta?.tool} />
+              </ReconBlock>
 
-  {/* META */}
-  <ReconBlock title="Scan Metadata">
-    <ReconItem label="Target" value={results.recon?.meta?.target} />
-    <ReconItem label="Type" value={results.recon?.meta?.type} />
-    <ReconItem label="Timestamp" value={results.recon?.meta?.timestamp} />
-    <ReconItem label="Tool" value={results.recon?.meta?.tool} />
-  </ReconBlock>
+              <ReconBlock title="DNS Records">
+                <ReconList label="A Records" values={results.recon?.data?.dns?.A} />
+                <ReconList label="AAAA Records" values={results.recon?.data?.dns?.AAAA} />
+                <ReconList label="MX Records" values={results.recon?.data?.dns?.MX} />
+                <ReconList label="NS Records" values={results.recon?.data?.dns?.NS} />
+              </ReconBlock>
 
-  {/* DNS */}
-  <ReconBlock title="DNS Records">
-    <ReconList label="A Records" values={results.recon?.data?.dns?.A} />
-    <ReconList label="AAAA Records" values={results.recon?.data?.dns?.AAAA} />
-    <ReconList label="MX Records" values={results.recon?.data?.dns?.MX} />
-    <ReconList label="NS Records" values={results.recon?.data?.dns?.NS} />
-  </ReconBlock>
+              <ReconBlock title="WHOIS Information">
+                <ReconItem label="Registrar" value={results.recon?.data?.whois?.registrar} />
+                <ReconItem label="Created On" value={results.recon?.data?.whois?.creation_date} />
+                <ReconItem label="Expires On" value={results.recon?.data?.whois?.expiration_date} />
+              </ReconBlock>
 
-  {/* WHOIS */}
-  <ReconBlock title="WHOIS Information">
-    <ReconItem label="Registrar" value={results.recon?.data?.whois?.registrar} />
-    <ReconItem label="Created On" value={results.recon?.data?.whois?.creation_date} />
-    <ReconItem label="Expires On" value={results.recon?.data?.whois?.expiration_date} />
-  </ReconBlock>
+              <ReconBlock title="HTTP Headers">
+                {Object.entries(results.recon?.data?.http_headers || {}).map(([k, v]) => (
+                  <ReconItem key={k} label={k} value={v} />
+                ))}
+              </ReconBlock>
+            </SectionCard>
 
-  {/* HTTP HEADERS */}
-  <ReconBlock title="HTTP Headers">
-    {Object.entries(results.recon?.data?.http_headers || {}).map(([k, v]) => (
-      <ReconItem key={k} label={k} value={v} />
-    ))}
-  </ReconBlock>
-
-</SectionCard>
-
-
-            {/* AI Strategy */}
+            {/* AI STRATEGY */}
             <SectionCard title="AI Strategy" icon={<Cpu size={18} color="#c084fc" />}>
               <Code>
                 {typeof results.ai_strategy === "string"
@@ -122,97 +115,61 @@ export default function AutoResults() {
               </Code>
             </SectionCard>
 
-            {/* Vulnerabilities */}
+            {/* VULNERABILITIES */}
             <div style={{ gridColumn: "1 / -1" }}>
               <SectionCard title="Detected Vulnerabilities" icon={<AlertTriangle size={18} color="#ef4444" />}>
                 {Array.isArray(results.vulnerabilities) && results.vulnerabilities.length > 0
                   ? results.vulnerabilities.map((v, i) => (
                       <Card key={i}>
                         <strong>{v.name || "Finding"}</strong>
-                        <p>{v.description || JSON.stringify(v)}</p>
+                        <p>{v.description}</p>
                       </Card>
                     ))
                   : <Muted>No vulnerabilities detected</Muted>}
               </SectionCard>
             </div>
 
-            {/* Directory Enumeration */}
+            {/* DIRECTORY ENUM */}
             <SectionCard title="Directory Enumeration" icon={<Folder size={18} color="#60a5fa" />}>
               <Code>
-                {JSON.stringify(results.directory_enum || {}, null, 2)}
+                {JSON.stringify(results.directory_enum || [], null, 2)}
               </Code>
             </SectionCard>
 
-            {/* HARDENING ADVICE — FINAL FIX */}
+            {/* HARDENING ADVICE */}
             <div style={{ gridColumn: "1 / -1" }}>
               <SectionCard title="Hardening Advice" icon={<ShieldCheck size={18} color="#22c55e" />}>
-
-                {/* Structured array */}
-                {Array.isArray(hardening) && hardening.length > 0 && (
+                {Array.isArray(hardening) && hardening.length > 0 ? (
                   <div style={{ display: "grid", gap: 20 }}>
                     {hardening.map((item, i) => (
                       <div key={i} style={{
-                        background: "rgba(34,197,94,0.05)",
-                        border: "1px solid rgba(34,197,94,0.15)",
+                        padding: 18,
                         borderRadius: 12,
-                        padding: 16
+                        background: "rgba(34,197,94,0.05)",
+                        border: "1px solid rgba(34,197,94,0.15)"
                       }}>
                         <h4 style={{
-                          margin: 0,
-                          marginBottom: 6,
+                          margin: "0 0 8px",
+                          fontSize: 15,
+                          fontWeight: "bold",
                           color: "#22c55e"
                         }}>
                           {item.title || `Recommendation ${i + 1}`}
                         </h4>
                         <p style={{
                           margin: 0,
-                          fontSize: 13,
-                          lineHeight: "1.6",
-                          color: theme.textDim
+                          fontSize: 14,
+                          lineHeight: "1.7",
+                          color: "#bbf7d0"
                         }}>
-                          {item.description || "No description provided."}
+                          {item.description}
                         </p>
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <Muted>No hardening advice available</Muted>
                 )}
-
-                {Array.isArray(hardening) && hardening.length > 0 && (
-  <div style={{ display: "grid", gap: "20px" }}>
-    {hardening.map((item, i) => (
-      <div
-        key={i}
-        style={{
-          padding: "18px",
-          borderRadius: "12px",
-          background: "rgba(34,197,94,0.05)",
-          border: "1px solid rgba(34,197,94,0.15)"
-        }}
-      >
-        <h4 style={{
-          margin: "0 0 8px",
-          fontSize: "15px",
-          fontWeight: "bold",
-          color: "#22c55e"
-        }}>
-          {item.title}
-        </h4>
-
-        <p style={{
-          margin: 0,
-          fontSize: "14px",
-          lineHeight: "1.7",
-          color: "#bbf7d0"
-        }}>
-          {item.description}
-        </p>
-      </div>
-    ))}
-  </div>
-)}
-
-
-                {!hardening && <Muted>No hardening advice available</Muted>}
               </SectionCard>
             </div>
 
@@ -244,13 +201,6 @@ const SectionCard = ({ title, icon, children }) => (
       <strong style={{ color: "#94a3b8" }}>{title}</strong>
     </div>
     {children}
-  </div>
-);
-
-const Row = ({ label, value }) => (
-  <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "monospace" }}>
-    <span>{label}</span>
-    <span>{typeof value === "object" ? JSON.stringify(value) : String(value)}</span>
   </div>
 );
 
@@ -294,21 +244,12 @@ const ReconBlock = ({ title, children }) => (
 );
 
 const ReconItem = ({ label, value }) => (
-  <div style={{
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: 13
-  }}>
+  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
     <span style={{ color: "#64748b" }}>{label}</span>
-    <span style={{ fontFamily: "monospace", color: "#e2e8f0" }}>
-      {value ?? "—"}
-    </span>
+    <span style={{ fontFamily: "monospace" }}>{value ?? "—"}</span>
   </div>
 );
 
 const ReconList = ({ label, values }) => (
-  <ReconItem
-    label={label}
-    value={Array.isArray(values) ? values.join(", ") : "—"}
-  />
+  <ReconItem label={label} value={Array.isArray(values) ? values.join(", ") : "—"} />
 );

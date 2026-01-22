@@ -78,13 +78,40 @@ export default function AutoResults() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
 
             {/* Recon */}
-            <SectionCard title="Reconnaissance" icon={<Globe size={18} color="#3b82f6" />}>
-              {results.recon
-                ? Object.entries(results.recon).map(([k, v]) => (
-                    <Row key={k} label={k} value={v} />
-                  ))
-                : <Muted>No recon data available</Muted>}
-            </SectionCard>
+<SectionCard title="Reconnaissance" icon={<Globe size={18} color="#3b82f6" />}>
+
+  {/* META */}
+  <ReconBlock title="Scan Metadata">
+    <ReconItem label="Target" value={results.recon?.meta?.target} />
+    <ReconItem label="Type" value={results.recon?.meta?.type} />
+    <ReconItem label="Timestamp" value={results.recon?.meta?.timestamp} />
+    <ReconItem label="Tool" value={results.recon?.meta?.tool} />
+  </ReconBlock>
+
+  {/* DNS */}
+  <ReconBlock title="DNS Records">
+    <ReconList label="A Records" values={results.recon?.data?.dns?.A} />
+    <ReconList label="AAAA Records" values={results.recon?.data?.dns?.AAAA} />
+    <ReconList label="MX Records" values={results.recon?.data?.dns?.MX} />
+    <ReconList label="NS Records" values={results.recon?.data?.dns?.NS} />
+  </ReconBlock>
+
+  {/* WHOIS */}
+  <ReconBlock title="WHOIS Information">
+    <ReconItem label="Registrar" value={results.recon?.data?.whois?.registrar} />
+    <ReconItem label="Created On" value={results.recon?.data?.whois?.creation_date} />
+    <ReconItem label="Expires On" value={results.recon?.data?.whois?.expiration_date} />
+  </ReconBlock>
+
+  {/* HTTP HEADERS */}
+  <ReconBlock title="HTTP Headers">
+    {Object.entries(results.recon?.data?.http_headers || {}).map(([k, v]) => (
+      <ReconItem key={k} label={k} value={v} />
+    ))}
+  </ReconBlock>
+
+</SectionCard>
+
 
             {/* AI Strategy */}
             <SectionCard title="AI Strategy" icon={<Cpu size={18} color="#c084fc" />}>
@@ -247,4 +274,41 @@ const Card = ({ children }) => (
 
 const Muted = ({ children }) => (
   <p style={{ color: "#94a3b8", fontStyle: "italic" }}>{children}</p>
+);
+
+const ReconBlock = ({ title, children }) => (
+  <div style={{ marginBottom: 20 }}>
+    <h4 style={{
+      marginBottom: 10,
+      color: "#94a3b8",
+      fontSize: 13,
+      textTransform: "uppercase",
+      letterSpacing: "1px"
+    }}>
+      {title}
+    </h4>
+    <div style={{ display: "grid", gap: 6 }}>
+      {children}
+    </div>
+  </div>
+);
+
+const ReconItem = ({ label, value }) => (
+  <div style={{
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: 13
+  }}>
+    <span style={{ color: "#64748b" }}>{label}</span>
+    <span style={{ fontFamily: "monospace", color: "#e2e8f0" }}>
+      {value ?? "—"}
+    </span>
+  </div>
+);
+
+const ReconList = ({ label, values }) => (
+  <ReconItem
+    label={label}
+    value={Array.isArray(values) ? values.join(", ") : "—"}
+  />
 );

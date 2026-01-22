@@ -30,7 +30,7 @@ RULES:
 - Return STRICT JSON ARRAY
 - Each item must contain:
   - title
-  - description (4–5 lines, professional, technical, actionable)
+  - description (8–25 lines, professional, technical, actionable)
 - Advice MUST reference recon data or discovered directories
 - Example topics:
   - Exposed admin panels

@@ -17,10 +17,10 @@ async def run_auto_pipeline(target: str):
         set_result("recon", recon_result)
 
         # DIRECTORY ENUMERATION
-        add_log("[DIR] Running directory enumeration (Feroxbuster)")
-        directories = run_feroxbuster(target)
-        add_log(f"[DIR] Discovered {len(directories)} directories")
+        add_log("[DIR] Directory enumeration temporarily disabled")
+        directories = "Directory Enumeration is disabled temporarily"
         set_result("directory_enum", directories)
+
 
         # VULNERABILITY ASSESSMENT
         add_log("[VA] Running vulnerability assessment")

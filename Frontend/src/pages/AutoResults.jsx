@@ -43,18 +43,35 @@ export default function AutoResults() {
   }
 
   const results = data?.results || {};
+  const sqli = results.sqli || [];
   const hardening = results.hardening_advice;
 
   return (
     <div style={{ display: "flex", height: "100vh", background: theme.bg, color: theme.textMain }}>
 
+      {/* Hide Scrollbars CSS */}
+      <style>{`
+        *::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+      
+      
       {/* SIDEBAR */}
-      <aside style={{ width: 280, background: theme.sidebar, borderRight: `1px solid ${theme.border}` }}>
-        <div style={{ padding: 32, fontWeight: "bold" }}>
-          RedOps <span style={{ color: "#3b82f6" }}>AI</span>
+      <aside style={{ width: "280px", backgroundColor: theme.sidebar, borderRight: `1px solid ${theme.border}`, display: "flex", flexDirection: "column", flexShrink: 0 }}>
+        <div style={{ padding: "32px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ height: "36px", width: "36px", background: theme.accent, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <ShieldAlert size={20} color="white" />
+          </div>
+          <span style={{ fontSize: "20px", fontWeight: "bold", fontStyle: "italic" }}>
+            RedOps <span style={{ color: "#3b82f6" }}>AI</span>
+          </span>
         </div>
-        <NavItem icon={<LayoutDashboard size={18} />} label="Dashboard" />
-        <NavItem icon={<FileText size={18} />} label="Scan Results" active />
+        <a href="/"><NavItem icon={<LayoutDashboard size={18} />} label="Dashboard" /></a>
+        <NavItem icon={<FileText size={22} />} label="Scan Results" active />
+         
+      
+      
+      
       </aside>
 
       {/* MAIN */}
@@ -128,6 +145,54 @@ export default function AutoResults() {
                   : <Muted>No vulnerabilities detected</Muted>}
               </SectionCard>
             </div>
+
+
+          {/* SQL INJECTION RESULTS */}
+<div style={{ gridColumn: "1 / -1" }}>
+  <SectionCard
+    title="SQL Injection Findings"
+    icon={<AlertTriangle size={18} color="#f97316" />}
+  >
+    {Array.isArray(sqli) && sqli.length > 0 ? (
+      <div style={{ display: "grid", gap: 16 }}>
+        {sqli.map((item, i) => (
+          <div
+            key={i}
+            style={{
+              background: "rgba(249,115,22,0.08)",
+              border: "1px solid rgba(249,115,22,0.3)",
+              padding: 16,
+              borderRadius: 12
+            }}
+          >
+            <strong style={{ color: "#fb923c" }}>
+              {item.parameter
+                ? `Parameter: ${item.parameter}`
+                : "Potential SQL Injection"}
+            </strong>
+
+            <p style={{ marginTop: 8, fontSize: 13 }}>
+              {item.description || "SQL injection behavior detected."}
+            </p>
+
+            {item.payload && (
+              <Code>{item.payload}</Code>
+            )}
+
+            {item.risk && (
+              <p style={{ fontSize: 12, color: "#fdba74" }}>
+                Risk: {item.risk}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <Muted>No SQL injection vectors detected</Muted>
+    )}
+  </SectionCard>
+</div>
+
 
             {/* DIRECTORY ENUM */}
             <SectionCard title="Directory Enumeration" icon={<Folder size={18} color="#60a5fa" />}>

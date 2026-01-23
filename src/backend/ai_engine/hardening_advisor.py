@@ -8,6 +8,7 @@ def generate_hardening_advice(
     findings: list,
     directories: list
 ) -> list[dict]:
+
     prompt = f"""
 You are a senior penetration tester writing a remediation report.
 
@@ -21,7 +22,7 @@ Discovered directories:
 {directories}
 
 Identified vulnerabilities:
-{findings}
+{json.dumps(findings, indent=2)}
 
 TASK:
 Generate realistic, target-specific hardening advice.
@@ -32,11 +33,11 @@ RULES:
   - title
   - description (8–25 lines, professional, technical, actionable)
 - Advice MUST reference recon data or discovered directories
-- Example topics:
-  - Exposed admin panels
-  - Technology fingerprint hardening
-  - Access control
-  - Logging & monitoring
+- Focus on real risks inferred from:
+  - HTTP headers
+  - DNS / hosting provider
+  - Application exposure
+  - SQL injection risks
 - NO generic security tips
 - NO markdown
 """
@@ -50,8 +51,8 @@ RULES:
     except Exception:
         pass
 
-    # fallback (never crash pipeline)
+    # Fallback (never break pipeline)
     return [{
-        "title": "Security Review Required",
+        "title": "Manual Security Review Recommended",
         "description": raw
     }]

@@ -64,7 +64,7 @@ export default function Landing() {
           <div style={styles.navLinks}>
             <Link to="/about" style={styles.navLink}>About</Link>
             <Link to="/docs" style={styles.navLink}>Docs</Link>
-            <Link to="/dashboard" style={styles.launchBtn} className="hover-scale">
+            <Link to="/legal" style={styles.launchBtn} className="hover-scale">
               Launch App
             </Link>
           </div>
@@ -89,7 +89,7 @@ export default function Landing() {
         </p>
 
         <div style={styles.ctaGroup}>
-          <Link to="/dashboard" style={styles.primaryBtn} className="hover-scale">
+          <Link to="/legal" style={styles.primaryBtn} className="hover-scale">
             Explore Platform <ChevronRight size={18} />
           </Link>
           <a 

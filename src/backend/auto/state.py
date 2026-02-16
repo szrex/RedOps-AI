@@ -23,3 +23,17 @@ def finish():
 def fail(error: str):
     AUTO_STATE["status"] = "ERROR"
     AUTO_STATE["logs"].append(f"[ERROR] {error}")
+
+def get_results():
+    return {
+        "target": AUTO_STATE["target"],
+        "status": AUTO_STATE["status"],
+        "results": AUTO_STATE["results"]
+    }
+
+
+def get_logs():
+    return {
+        "status": AUTO_STATE["status"],
+        "logs": AUTO_STATE["logs"]
+    }

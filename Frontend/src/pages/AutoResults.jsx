@@ -77,15 +77,40 @@ export default function AutoResults() {
       {/* MAIN */}
       <main style={{ flex: 1, overflowY: "auto" }}>
         <header style={{
-          padding: "20px 40px",
-          borderBottom: `1px solid ${theme.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: 12
-        }}>
-          <Zap size={16} color="#3b82f6" />
-          <strong>{data?.target || "Unknown Target"}</strong>
-        </header>
+  padding: "20px 40px",
+  borderBottom: `1px solid ${theme.border}`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between"
+}}>
+
+  {/* Left side */}
+  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+    <Zap size={16} color="#3b82f6" />
+    <strong>{data?.target || "Unknown Target"}</strong>
+  </div>
+
+  {/* Right side — DOWNLOAD BUTTON */}
+  <button
+    onClick={() =>
+      window.open("http://127.0.0.1:8000/report/download", "_blank")
+    }
+    style={{
+      padding: "8px 18px",
+      borderRadius: 8,
+      background: "#3b82f6",
+      color: "white",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer",
+      fontSize: 13
+    }}
+  >
+    Download Report
+  </button>
+
+</header>
+
 
         <div style={{ padding: 40, maxWidth: 1100, margin: "0 auto" }}>
           <h1 style={{ fontSize: 32, marginBottom: 40 }}>
@@ -318,3 +343,4 @@ const ReconItem = ({ label, value }) => (
 const ReconList = ({ label, values }) => (
   <ReconItem label={label} value={Array.isArray(values) ? values.join(", ") : "—"} />
 );
+

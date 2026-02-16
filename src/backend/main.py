@@ -9,7 +9,9 @@ from backend.ai_engine.agent_controller import agent_plan
 from backend.ai_engine.execution_engine import execute_tool
 from backend.ai_engine.execution_policy import can_execute
 from backend.ai_engine.hardening_advisor import generate_hardening_advice
-
+from backend.report.report_generator import generate_pdf_report
+from fastapi.responses import FileResponse
+import os
 from backend.core.execution_mode import get_mode, set_mode
 from backend.core.metrics import get_metrics
 from backend.core.scan_registry import (
@@ -178,3 +180,8 @@ def update_execution_mode(mode: str):
         return {"status": "updated", "mode": mode}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/report/download")
+def download_report():
+    path = generate_pdf_report()
+    return FileResponse(path, media_type="application/pdf", filename=os.path.basename(path))

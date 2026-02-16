@@ -28,7 +28,7 @@ TASK:
 Generate realistic, target-specific hardening advice.
 
 RULES:
-- Return STRICT JSON ARRAY
+
 - Each item must contain:
   - title
   - description (8–25 lines, professional, technical, actionable)

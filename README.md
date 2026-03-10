@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/redops-ai-banner.png" alt="RedOps-AI Banner" width="100%">
+  <img src="assets/report_banner.png" alt="RedOps-AI Banner" width="100%">
 </p>
 
 # RedOps-AI 🔴🤖  

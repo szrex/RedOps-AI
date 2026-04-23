@@ -181,7 +181,26 @@ def update_execution_mode(mode: str):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+from backend.auto.state import get_results  # ADD THIS IMPORT
+
 @app.get("/report/download")
 def download_report():
-    path = generate_pdf_report()
-    return FileResponse(path, media_type="application/pdf", filename=os.path.basename(path))
+    try:
+        data = get_results()
+
+        if not data:
+            raise HTTPException(status_code=404, detail="No scan results available")
+
+        output_path = "redops_report.pdf"
+
+        # Generate PDF with data
+        generate_pdf_report(data, output_path)
+
+        return FileResponse(
+            path=output_path,
+            media_type="application/pdf",
+            filename="RedOps_Report.pdf"
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

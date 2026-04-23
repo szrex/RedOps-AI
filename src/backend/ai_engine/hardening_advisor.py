@@ -28,10 +28,13 @@ TASK:
 Generate realistic, target-specific hardening advice.
 
 RULES:
+-Return STRICT JSON ARRAY
 
-- Each item must contain:
-  - title
-  - description (8–25 lines, professional, technical, actionable)
+  - Each section must contain:
+  - heading (short sub-heading)
+  - content (4–5 lines max)
+- DO NOT include "Title:" or "Description:"
+- DO NOT merge multiple recommendations into one paragraph
 - Advice MUST reference recon data or discovered directories
 - Focus on real risks inferred from:
   - HTTP headers

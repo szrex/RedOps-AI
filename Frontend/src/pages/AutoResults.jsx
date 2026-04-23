@@ -66,7 +66,7 @@ export default function AutoResults() {
             RedOps <span style={{ color: "#3b82f6" }}>AI</span>
           </span>
         </div>
-        <a href="/"><NavItem icon={<LayoutDashboard size={18} />} label="Dashboard" /></a>
+        <a href="/dashboard"><NavItem icon={<LayoutDashboard size={18} />} label="Dashboard" /></a>
         <NavItem icon={<FileText size={22} />} label="Scan Results" active />
          
       
@@ -163,9 +163,80 @@ export default function AutoResults() {
                 {Array.isArray(results.vulnerabilities) && results.vulnerabilities.length > 0
                   ? results.vulnerabilities.map((v, i) => (
                       <Card key={i}>
-                        <strong>{v.name || "Finding"}</strong>
-                        <p>{v.description}</p>
-                      </Card>
+  {/* Header */}
+  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+    
+    <strong style={{ fontSize: 15 }}>
+      {v.name || "Finding"}
+    </strong>
+
+    {/* Severity Badge */}
+    <span style={{
+      padding: "4px 10px",
+      borderRadius: 6,
+      fontSize: 11,
+      fontWeight: "bold",
+      background:
+        v.severity === "High" ? "#ef4444" :
+        v.severity === "Medium" ? "#f59e0b" :
+        "#22c55e",
+      color: "white"
+    }}>
+      {v.severity || "Medium"}
+    </span>
+  </div>
+
+  {/* CVSS */}
+  {v.cvss && (
+    <p style={{ fontSize: 12, color: "#94a3b8" }}>
+      CVSS Score: <strong>{v.cvss}</strong>
+    </p>
+  )}
+
+  {/* Description */}
+  <p style={{
+    fontSize: 13,
+    lineHeight: "1.7",
+    marginTop: 8,
+    color: "#cbd5f5"
+  }}>
+    {v.description}
+  </p>
+
+  {/* Attack Scenario */}
+  {v.attack && (
+    <div style={{
+      marginTop: 10,
+      padding: 10,
+      borderRadius: 8,
+      background: "rgba(239,68,68,0.08)"
+    }}>
+      <strong style={{ fontSize: 12, color: "#f87171" }}>
+        Attack Scenario
+      </strong>
+      <p style={{ fontSize: 12, marginTop: 4 }}>
+        {v.attack}
+      </p>
+    </div>
+  )}
+
+  {/* Exploitation */}
+  {v.exploit && (
+    <div style={{
+      marginTop: 8,
+      padding: 10,
+      borderRadius: 8,
+      background: "rgba(59,130,246,0.08)"
+    }}>
+      <strong style={{ fontSize: 12, color: "#60a5fa" }}>
+        How Attackers Exploit This
+      </strong>
+      <p style={{ fontSize: 12, marginTop: 4 }}>
+        {v.exploit}
+      </p>
+    </div>
+  )}
+</Card>
                     ))
                   : <Muted>No vulnerabilities detected</Muted>}
               </SectionCard>
@@ -227,42 +298,93 @@ export default function AutoResults() {
             </SectionCard>
 
             {/* HARDENING ADVICE */}
-            <div style={{ gridColumn: "1 / -1" }}>
-              <SectionCard title="Hardening Advice" icon={<ShieldCheck size={18} color="#22c55e" />}>
-                {Array.isArray(hardening) && hardening.length > 0 ? (
-                  <div style={{ display: "grid", gap: 20 }}>
-                    {hardening.map((item, i) => (
-                      <div key={i} style={{
-                        padding: 18,
-                        borderRadius: 12,
-                        background: "rgba(34,197,94,0.05)",
-                        border: "1px solid rgba(34,197,94,0.15)"
-                      }}>
-                        <h4 style={{
-                          margin: "0 0 8px",
-                          fontSize: 15,
-                          fontWeight: "bold",
-                          color: "#22c55e"
-                        }}>
-                          {item.title || `Recommendation ${i + 1}`}
-                        </h4>
-                        <p style={{
-                          margin: 0,
-                          fontSize: 14,
-                          lineHeight: "1.7",
-                          color: "#bbf7d0"
-                        }}>
-                          {item.description}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <Muted>No hardening advice available</Muted>
-                )}
-              </SectionCard>
-            </div>
+<div style={{ gridColumn: "1 / -1" }}>
+  <SectionCard title="Hardening Advice" icon={<ShieldCheck size={18} color="#22c55e" />}>
+    {Array.isArray(hardening) && hardening.length > 0 ? (
 
+      <div style={{ display: "grid", gap: 20 }}>
+        {hardening.map((item, i) => {
+
+          // 🔥 CLEAN + STRUCTURE TEXT
+          let raw = item.description || "";
+
+          // Remove junk labels
+          raw = raw
+            .replace(/Title:/gi, "")
+            .replace(/Description:/gi, "");
+
+          // Split into logical sections
+          const parts = raw
+            .split(/\.\s+/)
+            .map(p => p.trim())
+            .filter(p => p.length > 30);
+
+          // Group into chunks of 2–3 sentences per section
+          const sections = [];
+          for (let i = 0; i < parts.length; i += 2) {
+            sections.push(parts.slice(i, i + 2).join(". ") + ".");
+          }
+
+          return (
+            <div key={i} style={{
+              padding: 20,
+              borderRadius: 14,
+              background: "rgba(34,197,94,0.04)",
+              border: "1px solid rgba(34,197,94,0.12)",
+              display: "grid",
+              gap: 14
+            }}>
+
+              {/* MAIN TITLE */}
+              <h3 style={{
+                margin: 0,
+                fontSize: 16,
+                fontWeight: "bold",
+                color: "#22c55e"
+              }}>
+                {item.title || `Recommendation ${i + 1}`}
+              </h3>
+
+              {/* 🔥 GENERATED CLEAN SECTIONS */}
+              {sections.map((sec, idx) => (
+                <div key={idx} style={{ display: "grid", gap: 6 }}>
+
+                  {/* SUB HEADING */}
+                  <p style={{
+                    margin: 0,
+                    fontSize: 12,
+                    color: "#94a3b8",
+                    textTransform: "uppercase",
+                    letterSpacing: "1px"
+                  }}>
+                    {`Control ${idx + 1}`}
+                  </p>
+
+                  {/* CONTENT */}
+                  <p style={{
+                    margin: 0,
+                    fontSize: 14,
+                    lineHeight: "1.9",
+                    textAlign: "justify",
+                    textIndent: "24px",
+                    color: "#bbf7d0"
+                  }}>
+                    {sec}
+                  </p>
+
+                </div>
+              ))}
+
+            </div>
+          );
+        })}
+      </div>
+
+    ) : (
+      <Muted>No hardening advice available</Muted>
+    )}
+  </SectionCard>
+</div>
           </div>
         </div>
       </main>

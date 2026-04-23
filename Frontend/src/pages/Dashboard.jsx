@@ -79,12 +79,12 @@ export default function Dashboard() {
         <nav style={{ flex: 1, padding: "0 16px" }}>
           {/* Linked Sidebar Items */}
           <NavItem icon={<LayoutDashboard size={18} />} label="Dashboard" active url="/" />
-          <NavItem icon={<Target size={18} />} label="Scopes" url="/scopes" />
+          <NavItem icon={<Target size={18} />} label="Manual Scan" url="/auto" />
           <NavItem icon={<TerminalIcon size={18} />} label="Automated Scans" url="/auto" />
           <NavItem icon={<FileText size={18} />} label="Reports" url="/auto/results" />
           
           <div style={{ padding: "24px 16px 8px", fontSize: "10px", fontWeight: "bold", color: "#64748b", textTransform: "uppercase" }}>Configuration</div>
-          <NavItem icon={<Settings size={18} />} label="Settings" url="#" />
+          <NavItem icon={<Settings size={18} />} label="Settings" url="/settings" />
         </nav>
       </aside>
 

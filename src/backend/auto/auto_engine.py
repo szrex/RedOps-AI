@@ -5,7 +5,7 @@ from backend.vulnerability_assessment.correlation_engine import correlate_findin
 from backend.ai_engine.hardening_advisor import generate_hardening_advice
 from backend.ai_engine.agent_controller import agent_plan
 from backend.sqli.detector import run_sqli_detection
-
+from backend.vulnerability_assessment.heuristic_vulns import generate_probable_vulnerabilities
 
 async def run_auto_pipeline(target: str):
     try:
@@ -39,7 +39,11 @@ async def run_auto_pipeline(target: str):
             vulnerabilities=all_findings,
             directories=directories
         )
-        set_result("vulnerabilities", correlated)
+        heuristic = generate_probable_vulnerabilities(recon_result)
+
+        final_vulns = correlated + heuristic
+
+        set_result("vulnerabilities", final_vulns)
         set_result("sqli", sqli_findings)
 
         # ===================== AI STRATEGY =====================
